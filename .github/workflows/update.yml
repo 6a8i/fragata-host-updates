@@ -1,0 +1,112 @@
+name: Update the testing channel
+
+# Every day, compares the latest XCP-ng 8.3 packages (base, updates, LINSTOR) with those the published channel is
+# made of. When they changed:
+# - without the signing key in the secrets, the run summary lists the changes, to build the channel by hand
+#   (scripts/packages of fragata-host);
+# - with it (FRAGATA_SIGNING_KEY: the armored secret key, FRAGATA_SIGNING_PASSPHRASE: its passphrase), it downloads,
+#   checks, signs and publishes them in the testing channel 8.3-testing (repository fragata-testing of the hosts).
+# The workflow "Promote the testing channel" then makes 8.3-testing the 8.3 channel.
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: channel
+
+env:
+  VERSION: '8.3'
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      # https://github.com/actions/checkout
+      - name: Scripts of the channel
+        uses: actions/checkout@v4
+        with:
+          repository: 6a8i/fragata-host
+          path: fragata-host
+
+      - name: Select the packages
+        run: |
+          S=fragata-host/scripts/packages
+          python3 $S/select-packages.py $S/base-packages.txt selection.tsv $S/extras.txt
+
+      - name: Compare with the published channel
+        id: compare
+        run: |
+          site=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}
+          echo "site=$site" >>"$GITHUB_OUTPUT"
+          # the testing channel when there is one, else the stable one
+          for channel in $VERSION-testing $VERSION; do
+            curl -sfL "$site/$channel/selection.tsv" -o published.tsv && { echo "base=$channel" >>"$GITHUB_OUTPUT"; break; }
+          done
+          [ -f published.tsv ] || { echo "no published selection" >&2; exit 1; }
+          if cmp -s selection.tsv published.tsv; then
+            echo "changed=false" >>"$GITHUB_OUTPUT"
+            echo "The channel is up to date with XCP-ng $VERSION." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "changed=true" >>"$GITHUB_OUTPUT"
+          {
+            echo "### XCP-ng $VERSION packages changed"
+            echo
+            echo '```diff'
+            diff <(cut -f3 published.tsv | xargs -n1 basename | sort) <(cut -f3 selection.tsv | xargs -n1 basename | sort) | grep '^[<>]' | sed 's/^</-/; s/^>/+/' || true
+            echo '```'
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Signing key
+        id: key
+        if: steps.compare.outputs.changed == 'true'
+        env:
+          KEY: ${{ secrets.FRAGATA_SIGNING_KEY }}
+          PASSPHRASE: ${{ secrets.FRAGATA_SIGNING_PASSPHRASE }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "available=false" >>"$GITHUB_OUTPUT"
+            echo "No signing key in the secrets: build the channel with scripts/packages of fragata-host." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          mkdir -m 700 keys
+          printf '%s\n' "$KEY" >keys/fragata-signing.secret.asc
+          printf '%s' "$PASSPHRASE" >keys/passphrase.txt
+          curl -sfL "${{ steps.compare.outputs.site }}/RPM-GPG-KEY-fragata" -o keys/RPM-GPG-KEY-fragata
+          echo "available=true" >>"$GITHUB_OUTPUT"
+
+      - name: Published packages
+        if: steps.key.outputs.available == 'true'
+        run: |
+          site=${{ steps.compare.outputs.site }}/${{ steps.compare.outputs.base }}
+          mkdir -p build/repo/packages build/own
+          # the signed packages and their manifest: only the new packages are signed and uploaded
+          gh release download "packages-$VERSION" -R "$GITHUB_REPOSITORY" -D build/repo/packages -p '*.rpm'
+          curl -sfL "$site/signed.tsv" -o build/repo/signed.tsv
+          # the Fragata packages of the channel
+          curl -sfL "$site/own.txt" -o own.txt
+          while read -r name; do mv "build/repo/packages/$name" build/own/; done <own.txt
+          cp selection.tsv build/
+
+      - name: Build and sign
+        if: steps.key.outputs.available == 'true'
+        run: |
+          docker run --rm -v "$PWD/fragata-host/scripts/packages:/scripts:ro" -v "$PWD/build:/build" \
+            -v "$PWD/keys:/keys:ro" --user root ghcr.io/xcp-ng/xcp-ng-build-env:8.3 \
+            sh /scripts/build-repo.sh /build/selection.tsv /build/own /keys /build/repo \
+            "https://github.com/$GITHUB_REPOSITORY/releases/download/packages-$VERSION/"
+          sudo chown -R "$(id -u):$(id -g)" build
+
+      - name: Publish the testing channel
+        if: steps.key.outputs.available == 'true'
+        run: |
+          sh fragata-host/scripts/packages/publish-repo.sh build/repo "$GITHUB_REPOSITORY" "$VERSION" testing
+          echo "Published in the testing channel $VERSION-testing: test it, then run \"Promote the testing channel\"." >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Remove the key
+        if: always()
+        run: rm -rf keys

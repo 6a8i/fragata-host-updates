@@ -1,0 +1,26 @@
+name: Promote the testing channel
+
+# Makes the testing channel 8.3-testing the 8.3 channel, once its packages have been tested on a host
+# (repository fragata-testing). The packages are shared, only the metadata are copied.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: channel
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # https://github.com/actions/checkout
+      - name: Scripts of the channel
+        uses: actions/checkout@v4
+        with:
+          repository: 6a8i/fragata-host
+          path: fragata-host
+
+      - run: sh fragata-host/scripts/packages/promote-channel.sh "$GITHUB_REPOSITORY" 8.3
