@@ -1,0 +1,5 @@
+fragata-release-8.3.0-38.5.x86_64.rpm
+fragata-release-config-8.3.0-38.5.x86_64.rpm
+fragata-release-presets-8.3.0-38.5.x86_64.rpm
+fragata-plymouth-theme-1.0.0-1.xcpng8.3.noarch.rpm
+xcp-ng-xapi-plugins-1.17.0-1.1.xcpng8.3.noarch.rpm
