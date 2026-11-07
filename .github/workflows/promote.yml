@@ -1,7 +1,8 @@
 name: Promote the testing channel
 
 # Makes the testing channel 8.3-testing the 8.3 channel, once its packages have been tested on a host
-# (repository fragata-testing). The packages are shared, only the metadata are copied.
+# (repository fragata-testing). The packages stay in the release of their build, only the metadata are copied;
+# the releases no channel uses any more are deleted.
 on:
   workflow_dispatch:
 

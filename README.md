@@ -5,7 +5,8 @@ through `/etc/yum.repos.d/fragata.repo`.
 
 - metadata and public key: GitHub Pages, `https://6a8i.github.io/fragata-host-updates/<version>/x86_64/`
   (branch `gh-pages`);
-- packages: assets of the releases `packages-<version>`.
+- packages: assets of the releases `packages-<version>-<build>`, one per build of a channel (`release.txt` of the
+  channel names it; the first builds: `packages-<version>`).
 
 Every package and the repository metadata are signed by the Fragata Host key
 ([RPM-GPG-KEY-fragata](https://6a8i.github.io/fragata-host-updates/RPM-GPG-KEY-fragata),
