@@ -4,8 +4,11 @@ name: Update the testing channel
 # made of. When they changed:
 # - without the signing key in the secrets, the run summary lists the changes, to build the channel by hand
 #   (scripts/packages of fragata-host);
-# - with it (FRAGATA_SIGNING_KEY: the armored secret key, FRAGATA_SIGNING_PASSPHRASE: its passphrase), it downloads,
-#   checks, signs and publishes them in the testing channel 8.3-testing (repository fragata-testing of the hosts).
+# - with it (FRAGATA_SIGNING_KEY: the armored secret key, FRAGATA_SIGNING_PASSPHRASE: its passphrase), it rebuilds
+#   the changed packages from their sources (scripts/phase2 of fragata-host, in the buildroot of Fragata Host made
+#   from the published channel and its buildroot repository), checks and signs them (a package that does not build
+#   stays the upstream binary), and publishes them in the testing channel 8.3-testing (repository fragata-testing of
+#   the hosts) and the other rebuilt packages in the buildroot repository.
 # The workflow "Promote the testing channel" then makes 8.3-testing the 8.3 channel.
 on:
   schedule:
@@ -94,13 +97,48 @@ jobs:
           while read -r name; do mv "build/repo/packages/$name" build/own/; done <own.txt
           cp selection.tsv build/
 
+      - name: Rebuild the changed packages from their sources
+        if: steps.key.outputs.available == 'true'
+        env:
+          ENGINE: docker
+          BUILD_ENV: fragata
+          BUILD_CPUS: '4'
+          BUILD_MEMORY: 5g
+          TIMEOUT: '14400'
+        run: |
+          S=fragata-host/scripts/phase2
+          site=${{ steps.compare.outputs.site }}
+          mkdir -p rebuild build/rebuilt
+          # the packages that changed (name, location): their source packages are rebuilt
+          changed=$(comm -13 <(cut -f1,3 published.tsv | sort) <(cut -f1,3 selection.tsv | sort) | cut -f1)
+          [ -n "$changed" ] || { echo "no changed package to rebuild"; exit 0; }
+          python3 $S/select-sources.py selection.tsv rebuild/sources.tsv
+          # the buildroot image: the published rebuilt packages (the channel and its buildroot repository) and the
+          # archives of CentOS 7.9 and EPEL 7
+          docker run --rm ghcr.io/xcp-ng/xcp-ng-build-env:8.3 cat /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 >rebuild/RPM-GPG-KEY-EPEL-7
+          cp $S/buildroot.repo rebuild/
+          BUILDROOT_URLS="$site/${{ steps.compare.outputs.base }}/x86_64/ $site/buildroot-$VERSION/x86_64/" \
+            sh $S/make-buildroot.sh rebuild
+          sh $S/rebuild-srpms.sh rebuild/sources.tsv rebuild $changed
+          sudo chown -R "$(id -u):$(id -g)" rebuild
+          cp rebuild/rpms/*/*.rpm build/rebuilt/ 2>/dev/null || true
+          {
+            echo "### Rebuilt from their sources"
+            echo
+            echo '```'
+            cat rebuild/results.tsv
+            echo '```'
+            echo "A source package that failed to build stays the upstream binary in the channel (its log is in the run)."
+          } >>"$GITHUB_STEP_SUMMARY"
+
       - name: Build and sign
         if: steps.key.outputs.available == 'true'
         run: |
           docker run --rm -v "$PWD/fragata-host/scripts/packages:/scripts:ro" -v "$PWD/build:/build" \
             -v "$PWD/keys:/keys:ro" --user root ghcr.io/xcp-ng/xcp-ng-build-env:8.3 \
             sh /scripts/build-repo.sh /build/selection.tsv /build/own /keys /build/repo \
-            "https://github.com/$GITHUB_REPOSITORY/releases/download/packages-$VERSION-$(date -u +%Y%m%d%H%M)/"
+            "https://github.com/$GITHUB_REPOSITORY/releases/download/packages-$VERSION-$(date -u +%Y%m%d%H%M)/" \
+            /build/rebuilt
           sudo chown -R "$(id -u):$(id -g)" build
 
       - name: Publish the testing channel
@@ -108,6 +146,13 @@ jobs:
         run: |
           sh fragata-host/scripts/packages/publish-repo.sh build/repo "$GITHUB_REPOSITORY" "$VERSION" testing
           echo "Published in the testing channel $VERSION-testing: test it, then run \"Promote the testing channel\"." >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the buildroot repository
+        if: steps.key.outputs.available == 'true'
+        run: |
+          ls build/rebuilt/*.rpm >/dev/null 2>&1 || { echo "no rebuilt package"; exit 0; }
+          sudo apt-get install -y -q createrepo-c >/dev/null
+          sh fragata-host/scripts/phase2/publish-buildroot.sh build/rebuilt build/repo/rebuilt.txt "$GITHUB_REPOSITORY" "$VERSION"
 
       - name: Remove the key
         if: always()
