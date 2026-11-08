@@ -41,7 +41,7 @@ be9a30981184ea65d626a102538db2e06f275026c19963a31bc5d27aca3972a5	bridge-utils-1.
 c3c6e5d7b76f8976d7c0bbb4d898df435748fd5076602df41b44797a468350c4	cisco-fnic-2.0.0.90-1.1.xcpng8.3.x86_64.fragata.rpm
 da86b27bdfac90a98d083608041dc1c76f7d738f58380bc8e67a6c67f43e6318	compat-db-headers-4.7.25-28.el7.noarch.fragata.rpm
 6e25820fe6d4d522f27b1ceb1fbdd072fbffbbe2aaccfb2d7d93e9411e0fd4e5	compat-db47-4.7.25-28.el7.x86_64.fragata.rpm
-22a5710dd5c3a7a9439bcdf844a0cabadf1e5d3d9a556599788b5df5c5581e92	compat-libstdc.-33-3.2.3-72.el7.x86_64.rpm
+5a538bb76bf2e5f02d0e7db90e1cdf2003634f112aaa6971d330fdc5720c3672	compat-libstdc.-33-3.2.3-72.el7.x86_64.fragata.rpm
 8be3c871d08e4959db35c59337ddbb93d8b9aa2f04cf3385bee3bdd93eb81371	control-slice-1.3.0-1.xcpng8.3.x86_64.fragata.rpm
 149df84362967c499f56b099f8c2cacfe63f20d3b6a43a6b13af6a9b895d8fe7	copy-jdk-configs-3.3-10.el7_5.noarch.fragata.rpm
 601d44b4b252a832dd4b27f2db17209f9924d8cbe827d14cffdb5f713e27dfdb	coreutils-8.22-22.xcpng8.3.x86_64.fragata.rpm
@@ -76,12 +76,12 @@ daaf232dff4cbcb448a4210d5dbc261bd6eb24f7d385f8d40df3b9479b6d2e8d	dhcp-libs-4.2.5
 0ef48e9eddcfa3095fbe0af36f0dbf48758b65271e90442bfda7cf122f66aa6a	dmidecode-3.6-3.xcpng8.3.x86_64.fragata.rpm
 9c22b42a0d58366759c60905f0d701d43392a7c42df973f19182a615619918ae	dracut-033-539.1.xcpng8.3.x86_64.fragata.rpm
 287df49d7c0677eacb5dc19a7ceccb4500c32614edd5195b117ce21595abef86	dracut-network-033-539.1.xcpng8.3.x86_64.fragata.rpm
-c4e480e1992ef43927308ac7d77d0072512636fe0d8c72c44409a69766a22e4c	drbd-9.33.0-1.el7_9.x86_64.rpm
-fac25c05d0bab7b7c9dc80476f7fb5d33019d9b61d49aeb780608a08015e7d71	drbd-bash-completion-9.33.0-1.el7_9.noarch.rpm
-944b2334caa8384b62922f86e9daf6974283c1b7cd2308e1d024ef9cc81bfde5	drbd-pacemaker-9.33.0-1.el7_9.noarch.rpm
+5a58f448febea72483214c00fcccaf2c3bc17c654c321b449798bbde35deb510	drbd-9.33.0-1.el7_9.x86_64.fragata.rpm
+ae37d8c090c246551b5354fa4965076ca42d481f5478138ce36b14e888a27bbd	drbd-bash-completion-9.33.0-1.el7_9.noarch.fragata.rpm
+4d9d77d169f40d72469e0d48d5211bf9bea257c8c93715b0d8309f1054773899	drbd-pacemaker-9.33.0-1.el7_9.noarch.fragata.rpm
 0c28eaf0c5ac9177e9ebd32f2cacd82a81ad09bef2fef9f92a75ac5f1c1e1033	drbd-reactor-1.9.0-1.x86_64.rpm
-b1ead905875f0cfd9b34ace3a62c060d2e0772655e5a127d9e59b7570b4f8086	drbd-udev-9.33.0-1.el7_9.noarch.rpm
-4a67a13dc84b172ae74fbc7a49ce0dd79aa14232247238e09ac7faf75ae9cbbb	drbd-utils-9.33.0-1.el7_9.x86_64.rpm
+236a40b376a6a6c6005749af0a8abc13d55762c846a2676dc2e26ef2b592b750	drbd-udev-9.33.0-1.el7_9.noarch.fragata.rpm
+e6f447b8b183a001e23a4c5e11505269f14043e0f1fa082b24fcd9de5212e2f5	drbd-utils-9.33.0-1.el7_9.x86_64.fragata.rpm
 90f88878d4732672657237aa88d1f8987457bb0cc6c50c9c33691b9939c9fe02	dyninst-9.3.1-1.el7.x86_64.fragata.rpm
 6bf3e97538016d4a794b782f7f90435fd8363b94e71cf744c0e19611a9e6e093	e2fsprogs-1.47.0-1.1.xcpng8.3.x86_64.fragata.rpm
 55436b4d88bc4dbc05e3ef0221c3325d9413db8857b6c6e5d46749b0e40fb3b2	e2fsprogs-libs-1.47.0-1.1.xcpng8.3.x86_64.fragata.rpm
@@ -430,9 +430,8 @@ e740c1889a03a580209e14cc0666b3af4e1bb5ddafb72cc5b1c0759a471f6318	python-linstor-
 75efd3658f85936ad080330a269e1701774bc69232cdfe682ac91e4de56f9a8d	python2-defusedxml-0.7.1-1.xcpng8.3.noarch.fragata.rpm
 33d08c6b090030799e5c7c3dd3c6258fc5a21cf80442794a0b215d1627fe5432	python2-future-0.18.2-2.el7.noarch.fragata.rpm
 02aa5bef8740fc24c54f5c8b7ddb3deaf06369267ddee083af7daf149d01c137	python2-newt-0.52.23-4.xcpng8.3.x86_64.fragata.rpm
-3adb5cdc8b06d55a20f2031772c49aa2385eded3c3b47807ffbac58d2d4a8504	python2-psutil-2.2.1-3.el7.x86_64.rpm
+43951ea20fd511aa45e41d76f965ce2a0ff137207af577c00a56aa52763249b4	python2-psutil-2.2.1-3.el7.x86_64.fragata.rpm
 466dc31b83efc8ec1551a5c1ac7d5c62c6435ef4d4342a720d0cc2087a604f87	python2-pyudev-0.21.0-2.1.xcpng8.3.noarch.fragata.rpm
-7503eb27802ef20b387b56b8cc5baa99df7b57d8b92d0db49c1df9b7190300d7	python2-xapi-storage-24.19.2-1.10.xcpng8.3.x86_64.rpm
 0ed7f06ec3ba2f12dbffc723833c1c99a60fa0b86e4f8095bf0125330be1d022	python3-3.6.8-20.xcpng8.3.x86_64.fragata.rpm
 92cff522a8c54ebcd6e704f08caf7fa6cc0ebb7f900fd130dc4684461ff7dc40	python3-charset-normalizer-2.1.0-4.1.xcpng8.3.noarch.fragata.rpm
 17bbc28f9954d383c478d07e0a1ba952f1e2171eddc10d64affb06080fbaa9f9	python3-contextvars-2.4-3.1.xcpng8.3.noarch.fragata.rpm
@@ -616,4 +615,5 @@ b9591d67d55a9b58810414e14f31f290bf4c6f4008d5a493144f394d856a73c3	yum-utils-1.1.3
 8d1339a82797798c49e82cf0920e757cefa5de13c6d599080482b7ba494eba7d	fragata-release-8.3.0-38.5.x86_64.rpm
 e797041be88894c6be052513f745827c7be28dd07c66f3e252288311c29e22bb	fragata-release-config-8.3.0-38.5.x86_64.rpm
 3df7570d232c1a90d365a0bf385022b78cde1156e44d43fc16bd22a5f92c9d26	fragata-release-presets-8.3.0-38.5.x86_64.rpm
+124730815b400b126e04c14873e08428def7744a4d1da1e686e9a9ff4f4530f2	python2-xapi-storage-24.19.2-1.10.1.xcpng8.3.noarch.rpm
 035bdf6ef011608651850ae364b6eba199ee9d3ae24944625dd6c8f8e21f0bf3	xcp-ng-xapi-plugins-1.17.0-1.1.xcpng8.3.noarch.rpm

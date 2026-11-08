@@ -41,6 +41,7 @@ cisco-enic-4.5.0.7-1.xcpng8.3.x86_64.fragata.rpm
 cisco-fnic-2.0.0.90-1.1.xcpng8.3.x86_64.fragata.rpm
 compat-db-headers-4.7.25-28.el7.noarch.fragata.rpm
 compat-db47-4.7.25-28.el7.x86_64.fragata.rpm
+compat-libstdc.-33-3.2.3-72.el7.x86_64.fragata.rpm
 control-slice-1.3.0-1.xcpng8.3.x86_64.fragata.rpm
 copy-jdk-configs-3.3-10.el7_5.noarch.fragata.rpm
 coreutils-8.22-22.xcpng8.3.x86_64.fragata.rpm
@@ -75,6 +76,11 @@ diffutils-3.3-4.el7.x86_64.fragata.rpm
 dmidecode-3.6-3.xcpng8.3.x86_64.fragata.rpm
 dracut-033-539.1.xcpng8.3.x86_64.fragata.rpm
 dracut-network-033-539.1.xcpng8.3.x86_64.fragata.rpm
+drbd-9.33.0-1.el7_9.x86_64.fragata.rpm
+drbd-bash-completion-9.33.0-1.el7_9.noarch.fragata.rpm
+drbd-pacemaker-9.33.0-1.el7_9.noarch.fragata.rpm
+drbd-udev-9.33.0-1.el7_9.noarch.fragata.rpm
+drbd-utils-9.33.0-1.el7_9.x86_64.fragata.rpm
 dyninst-9.3.1-1.el7.x86_64.fragata.rpm
 e2fsprogs-1.47.0-1.1.xcpng8.3.x86_64.fragata.rpm
 e2fsprogs-libs-1.47.0-1.1.xcpng8.3.x86_64.fragata.rpm
@@ -419,6 +425,7 @@ python-urlgrabber-3.10-8.el7.noarch.fragata.rpm
 python2-defusedxml-0.7.1-1.xcpng8.3.noarch.fragata.rpm
 python2-future-0.18.2-2.el7.noarch.fragata.rpm
 python2-newt-0.52.23-4.xcpng8.3.x86_64.fragata.rpm
+python2-psutil-2.2.1-3.el7.x86_64.fragata.rpm
 python2-pyudev-0.21.0-2.1.xcpng8.3.noarch.fragata.rpm
 python3-3.6.8-20.xcpng8.3.x86_64.fragata.rpm
 python3-charset-normalizer-2.1.0-4.1.xcpng8.3.noarch.fragata.rpm
